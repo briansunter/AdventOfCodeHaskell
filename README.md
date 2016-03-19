@@ -431,7 +431,7 @@ pointParser = do
   y <- decimal
   return (x,y)
 ```
-This parser takes a number, consumes the `,` and throws it away, then takes the next number, and finally turns it into a point. This `do` notation is easy to understand coming from an imperitve background and is readable, but there's an alternative way of writing this in an `Applicative` style, which is a more functional approach. I don't want to get super into explaining `Functor`, `Applicative`, and `Monad` so I'll give a hand wavey example of this style. A good explanation with pictures can be found [Here](http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html).
+This parser takes a number, consumes the `,` and throws it away, then takes the next number, and finally turns it into a point. This `do` notation is easy to understand coming from an imperative background and is readable, but there's an alternative way of writing this in an `Applicative` style, which is a more functional approach. I don't want to get into explaining `Functor`, `Applicative`, and `Monad` so I'll give a hand wavey example of this style. A good explanation with pictures can be found [Here](http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html).
 
 This is equivalent to above:
 ```
@@ -439,7 +439,7 @@ pointParser2 :: Parser Point
 pointParser2 = (,) <$> (decimal <* char ',')
                    <*> decimal
 ```
-`(,)` is the point type constructor which takes two more parameters and returns a Point. The `decimal <* char ','` reads the decimal and throws away the `,`. I prefer this style because it doesn't require any intermediate values and is more composible than `do` notation, but this is somewhat up to personal preference. When you get more comfortable with Applicative Functors and your library's operators you may prefer this style as well.
+`(,)` is the point type constructor which takes two more parameters and returns a Point. The `decimal <* char ','` reads the decimal and throws away the `,`. I prefer this style because it doesn't require any intermediate values and is more composable than `do` notation, but this is somewhat up to personal preference. When you get more comfortable with Applicative Functors and your library's operators you may prefer this style as well.
 
 Now lets combine our point and action parser.
 
@@ -566,7 +566,7 @@ If the provided `Circuit` is a `Signal`, we already know the output signal and j
 runCircuit _ (Signal a) = a
 ```
 
-If the `Circuit` is a `Wire`, we search in the `CircuitBox` for the `Circuit` that feeds into that `Wire` and recursively run our function with the newfound `Circuit`.
+If the `Circuit` is a `Wire`, we search in the `CircuitBox` for the `Circuit` that feeds into that `Wire` and recursively run our function with the newfound `Circuit` until we encounter the input signal.
 
 ```
 runCircuit b (Wire a) = runCircuit b $ (M.!) b a
@@ -590,7 +590,7 @@ runCircuit circuitBox (Wire (Label "a"))
 This program runs correctly but there's a problem: it's extremely slow. Let's figure out how to make it fast.
 Reddit user [Borkdude](https://www.reddit.com/user/Borkdude) made a graph of his circuit input for this problem.
 
-![Day 7 Graph](https://github.com/brsunter/res/day7graph.png)
+![Day 7 Graph](https://github.com/brsunter/AdventOfCodeHaskell/blob/master/res/day7graph.png)
 
 If we're looking for the signal of wire a (at the top) we can see its dependency graph underneath it. We can see that both ls and lr depend on the value from lq. This means that our program will compute the entire dependency graph of lq two times, which is a lot of uneccesary work. We need to memoize our function, so after a circuit as been computed once, it will return instantly for future calls with the same input.
 
